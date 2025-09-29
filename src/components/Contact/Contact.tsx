@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import './Contact.css';
 
@@ -30,13 +29,13 @@ const Contact: React.FC = () => {
   const validateForm = () => {
     const newErrors: any = {};
     
-    if (!formData.name.trim()) newErrors.name = 'El nombre es obligatorio';
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
     if (!formData.email.trim()) {
-      newErrors.email = 'El correo electrónico es obligatorio';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'El correo electrónico es inválido';
+      newErrors.email = 'Email is invalid';
     }
-    if (!formData.message.trim()) newErrors.message = 'El mensaje es obligatorio';
+    if (!formData.message.trim()) newErrors.message = 'Message is required';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -67,7 +66,7 @@ const Contact: React.FC = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.error || 'Error al enviar el mensaje');
+        throw new Error(result.error || 'Failed to send message');
       }
 
       setSubmitStatus('success');
@@ -96,49 +95,48 @@ const Contact: React.FC = () => {
     <section id="contact" className="contact">
       <div className="contact-container">
         <div className="section-header">
-          <p className="section-tagline">Contáctanos</p>
-          <h2 className="section-title">Hablemos de Tus Metas Financieras</h2>
+          <p className="section-tagline">Encuesta de contacto</p>
+          <h2 className="section-title">Contáctenos para hablar sobre sus finanzas</h2>
         </div>
         
         <div className="contact-content">
           <div className="contact-info">
-            <h3>Información de Contacto</h3>
+            <h3>Información adicional</h3>
             <p className="contact-intro">
-              Estamos aquí para ayudarte a alcanzar el éxito financiero. Contáctanos para programar
-              una consulta o para obtener más información sobre nuestros servicios.
+             Estamos aquí para ayudarle a alcanzar el éxito financiero. Contáctenos para programar una consulta o para conocer más sobre nuestros servicios.
             </p>
             
             <div className="info-items">
               <div className="info-item">
                 <span className="info-icon">📍</span>
                 <div>
-                  <h4>Ubicación de la Oficina</h4>
-                  <p>[Tu Dirección]<br/>[Ciudad, Estado ZIP]</p>
+                  <h4>Localización de oficina</h4>
+                  <p>29 C. Cristina<br/>Ponce, Puerto Rico 00730</p>
                 </div>
               </div>
               
               <div className="info-item">
                 <span className="info-icon">📞</span>
                 <div>
-                  <h4>Número de Teléfono</h4>
-                  <p>[Número de Teléfono]</p>
+                  <h4>Número de teléfono</h4>
+                  <p>+1 (939) 608-3732</p>
                 </div>
               </div>
               
               <div className="info-item">
                 <span className="info-icon">✉️</span>
                 <div>
-                  <h4>Correo Electrónico</h4>
-                  <p>alexisbarriera72@gmail.com</p>
+                  <h4>Email:</h4>
+                  <p>shaddaietp@gmail.com</p>
                 </div>
               </div>
               
               <div className="info-item">
                 <span className="info-icon">🕒</span>
                 <div>
-                  <h4>Horario de Atención</h4>
-                  <p>Lunes - Viernes: 9:00 AM - 6:00 PM<br/>
-                     Sábado: Con Cita Previa</p>
+                  <h4>Horas de oficina:</h4>
+                  <p>Lunes - Viernes: 8:30 AM - 5:00 PM<br/>
+                     Sábado (PHP solo): 10:00 AM - 1:00 PM</p>
                 </div>
               </div>
             </div>
@@ -149,8 +147,8 @@ const Contact: React.FC = () => {
               <div className="form-message success">
                 <span className="message-icon">✅</span>
                 <div>
-                  <strong>¡Mensaje Enviado Exitosamente!</strong>
-                  <p>Gracias por contactarnos. Te responderemos dentro de 24 horas.</p>
+                  <strong>Mensaje fue enviado sucesivamente!</strong>
+                  <p>Gracias por contactarnos. Nos pondremos en contacto con usted lo antes posible.</p>
                 </div>
               </div>
             )}
@@ -159,15 +157,15 @@ const Contact: React.FC = () => {
               <div className="form-message error">
                 <span className="message-icon">❌</span>
                 <div>
-                  <strong>Error al Enviar el Mensaje</strong>
-                  <p>Por favor intenta de nuevo o contáctanos directamente por teléfono o correo electrónico.</p>
+                  <strong>Mensaje no pudo ser enviado</strong>
+                  <p>Por favor, intente de nuevo o contáctenos directamente por teléfono o correo electrónico.</p>
                 </div>
               </div>
             )}
 
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="name">Nombre Completo *</label>
+                <label htmlFor="name">Nombre completo *</label>
                 <input
                   type="text"
                   id="name"
@@ -175,7 +173,7 @@ const Contact: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  placeholder="Juan Pérez"
+                  placeholder="Nombre & Apellido"
                   disabled={isSubmitting}
                   className={errors.name ? 'error' : ''}
                 />
@@ -183,7 +181,7 @@ const Contact: React.FC = () => {
               </div>
               
               <div className="form-group">
-                <label htmlFor="email">Correo Electrónico *</label>
+                <label htmlFor="email">Email *</label>
                 <input
                   type="email"
                   id="email"
@@ -191,7 +189,7 @@ const Contact: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="juan@ejemplo.com"
+                  placeholder="email@example.com"
                   disabled={isSubmitting}
                   className={errors.email ? 'error' : ''}
                 />
@@ -201,20 +199,20 @@ const Contact: React.FC = () => {
             
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="phone">Número de Teléfono</label>
+                <label htmlFor="phone">Número de teléfono</label>
                 <input
                   type="tel"
                   id="phone"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="(787) 123-4567"
+                  placeholder="(123) 456-7890"
                   disabled={isSubmitting}
                 />
               </div>
               
               <div className="form-group">
-                <label htmlFor="service">Servicio de Interés</label>
+                <label htmlFor="service">Servicio de interés</label>
                 <select
                   id="service"
                   name="service"
@@ -222,14 +220,15 @@ const Contact: React.FC = () => {
                   onChange={handleChange}
                   disabled={isSubmitting}
                 >
-                  <option value="">Selecciona un servicio</option>
-                  <option value="tax-preparation">Preparación de Impuestos</option>
+                  <option value="">Seleccione un servicio</option>
+                  <option value="tax-preparation">Preparación de impuestos</option>
                   <option value="bookkeeping">Contabilidad</option>
-                  <option value="financial-planning">Planificación Financiera</option>
-                  <option value="business-consulting">Consultoría Empresarial</option>
-                  <option value="audit-services">Servicios de Auditoría</option>
-                  <option value="payroll-services">Servicios de Nómina</option>
+                  <option value="financial-planning">Planificación financiera</option>
+                  <option value="business-consulting">Consultoría empresarial</option>
+                  <option value="audit-services">Servicios de auditoría</option>
+                  <option value="payroll-services">Servicios de nómina</option>
                   <option value="other">Otro</option>
+
                 </select>
               </div>
             </div>
@@ -243,7 +242,7 @@ const Contact: React.FC = () => {
                 onChange={handleChange}
                 required
                 rows={5}
-                placeholder="Cuéntanos sobre tus necesidades contables..."
+                placeholder="Cuéntenos sobre sus necesidades contables"
                 disabled={isSubmitting}
                 className={errors.message ? 'error' : ''}
               />
@@ -255,7 +254,7 @@ const Contact: React.FC = () => {
               className="submit-btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Enviando...' : 'Enviar Mensaje'}
+              {isSubmitting ? 'Sending...' : 'Send Message'}
             </button>
           </form>
         </div>
