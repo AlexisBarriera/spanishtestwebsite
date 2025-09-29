@@ -1,0 +1,17 @@
+
+{
+  "functions": {
+    "api/booking.ts": {
+      "maxDuration": 10
+    },
+    "api/contact.ts": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
+}
