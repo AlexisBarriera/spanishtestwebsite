@@ -27,7 +27,7 @@ const Hero: React.FC = () => {
             atención al detalle garantiza tu completa tranquilidad.
           </p>
           <div className="hero-cta">
-            <button className="btn-primary">Programar Consulta</button>
+            <button onClick={() => navigateToSection('contact')} className="btn-primary">Programar Consulta</button>
             <button className="btn-secondary">Saber Más</button>
           </div>
         </div>
