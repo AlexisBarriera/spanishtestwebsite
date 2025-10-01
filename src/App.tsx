@@ -29,6 +29,7 @@ function App() {
       <Services />
       <BookingCalendar />
       <Contact />
+      <AIChatAssistant />
     </div>
   );
 }
