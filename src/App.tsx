@@ -7,6 +7,7 @@ import Services from './components/Services/Services';
 import BookingCalendar from './components/BookingCalendar/BookingCalendar';
 import Contact from './components/Contact/Contact';
 import NavigationTabs from './components/NavigationTabs/NavigationTabs';
+import AIChatAssistant from './components/AIChatAssistant';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
