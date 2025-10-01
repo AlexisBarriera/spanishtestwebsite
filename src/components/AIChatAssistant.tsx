@@ -173,7 +173,7 @@ const AIChatAssistant = () => {
                 <h3 style={{ margin: 0, fontSize: '18px', fontWeight: '600' }}>
                   Asistente AI de Contabilidad
                 </h3>
-                <p style={{ margin: '2px 0 0 0', fontSize: '11px', opacity: 0.9 }}>
+                <p style={{ margin: '2px 0 0 0', fontSize: '11px', opacity: 0.9, fontWeight: 600, }}>
                   Powered by Llama 3.3 AI • Respuestas inteligentes 24/7
                 </p>
               </div>
