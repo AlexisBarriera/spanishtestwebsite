@@ -53,12 +53,6 @@ const Services: React.FC = () => {
             </div>
           ))}
         </div>
-        
-        <div className="services-cta">
-          <h3>¿Listo para Comenzar?</h3>
-          <p>Contáctanos hoy para discutir cómo podemos ayudarte con tus necesidades contables.</p>
-          <button className="cta-btn">Programar Consulta</button>
-        </div>
       </div>
     </section>
   );
