@@ -18,18 +18,30 @@ export interface Booking {
   notes: string;
   status: 'confirmed' | 'cancelled';
   createdAt: string;
+  eventId?: string;
+  isExternal?: boolean;
 }
 
 const BookingCalendar: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [externalBookings, setExternalBookings] = useState<Booking[]>([]);
   const [confirmedBooking, setConfirmedBooking] = useState<Booking | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingExternal, setIsLoadingExternal] = useState(false);
 
   useEffect(() => {
     loadBookings();
+    loadExternalBookings();
   }, []);
+
+  useEffect(() => {
+    // Reload external bookings when date changes to get current availability
+    if (selectedDate) {
+      loadExternalBookings();
+    }
+  }, [selectedDate]);
 
   const loadBookings = async () => {
     try {
