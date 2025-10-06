@@ -28,16 +28,24 @@ const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
 
   const isSlotPast = (time: string) => {
     const now = new Date();
-    const slotDate = new Date(selectedDate);
     const [hourStr, period] = time.split(' ');
     const [hour, minute] = hourStr.split(':').map(Number);
     let adjustedHour = hour;
-    
+
     if (period === 'PM' && hour !== 12) adjustedHour += 12;
     if (period === 'AM' && hour === 12) adjustedHour = 0;
-    
-    slotDate.setHours(adjustedHour, minute || 0, 0, 0);
-    
+
+    // Create slot date in local timezone (Puerto Rico)
+    const slotDate = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate(),
+      adjustedHour,
+      minute || 0,
+      0,
+      0
+    );
+
     return slotDate < now;
   };
 
