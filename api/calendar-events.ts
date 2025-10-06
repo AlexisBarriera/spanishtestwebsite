@@ -58,10 +58,13 @@ export default async function handler(
     const bookings = events
       .filter(event => event.start?.dateTime && event.end?.dateTime)
       .map(event => {
-        // Parse the datetime from Google Calendar (it's in UTC)
+        // Parse the datetime from Google Calendar
+        // Google Calendar returns times in UTC, but if no explicit timezone was set,
+        // we need to interpret them in the calendar's timezone context
         const startDateTimeUTC = new Date(event.start!.dateTime!);
 
-        // Convert to Puerto Rico time (UTC-4)
+        // For events without explicit timezone, assume they're in Puerto Rico time
+        // and convert from UTC to local time for display
         const startDateTimePR = new Date(startDateTimeUTC.getTime() - (4 * 60 * 60 * 1000));
 
         // Convert 24-hour format to 12-hour format for display
