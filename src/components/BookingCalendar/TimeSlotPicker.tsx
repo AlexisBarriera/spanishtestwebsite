@@ -45,22 +45,33 @@ const TimeSlotPicker: React.FC<TimeSlotPickerProps> = ({
   const afternoonSlots = timeSlots.slice(3, 6);
   const eveningSlots = timeSlots.slice(6);
 
+  const getBookingForSlot = (time: string) => {
+    return bookings.find(b => b.time === time && b.status !== 'cancelled');
+  };
+
   const renderTimeSlot = (time: string) => {
-    const booked = isSlotBooked(time);
+    const booking = getBookingForSlot(time);
+    const booked = !!booking;
     const past = isSlotPast(time);
     const selected = selectedTime === time;
     const disabled = booked || past;
+    const isExternal = booking?.isExternal;
 
     return (
       <button
         key={time}
-        className={`time-slot ${selected ? 'selected' : ''} 
-                   ${booked ? 'booked' : ''} ${past ? 'past' : ''}`}
+        className={`time-slot ${selected ? 'selected' : ''}
+                   ${booked ? 'booked' : ''} ${past ? 'past' : ''}
+                   ${isExternal ? 'external-booking' : ''}`}
         onClick={() => !disabled && onTimeSelect(time)}
         disabled={disabled}
       >
         <span className="slot-time">{time}</span>
-        {booked && <span className="slot-status">Reservado</span>}
+        {booked && (
+          <span className="slot-status">
+            {isExternal ? 'Reservado (Cliente Externo)' : 'Reservado'}
+          </span>
+        )}
         {past && !booked && <span className="slot-status">Pasado</span>}
       </button>
     );
