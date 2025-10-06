@@ -39,36 +39,19 @@ export default async function handler(
     const { booking } = req.body;
 
     // Parse date and time
-    const [year, month, day] = booking.date.split('-');
+    const [year, month, day] = booking.date.split('-').map(Number);
     const [time, period] = booking.time.split(' ');
-    const [hour, minute] = time.split(':');
-    
-    let hour24 = parseInt(hour);
-    if (period === 'PM' && hour24 !== 12) hour24 += 12;
-    if (period === 'AM' && hour24 === 12) hour24 = 0;
-    const puertoRicoOffset = -4; // UTC-4
+    const [hour, minute] = time.split(':').map(Number);
 
-    const startDateTime = new Date(
-      Date.UTC(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        hour24 + puertoRicoOffset,
-        parseInt(minute) || 0
-      )
-    );
+    let hour24 = hour;
+    if (period === 'PM' && hour !== 12) hour24 += 12;
+    if (period === 'AM' && hour === 12) hour24 = 0;
 
-    const endDateTime = new Date(
-      Date.UTC(
-        parseInt(year),
-        parseInt(month) - 1,
-        parseInt(day),
-        hour24 + puertoRicoOffset + 1,
-        parseInt(minute) || 0
-      )
-    );
+    // Create the date in local time - the simplest approach
+    const startDateTime = new Date(year, month - 1, day, hour24, minute || 0);
+    const endDateTime = new Date(year, month - 1, day, hour24 + 1, minute || 0);
 
-    // Create calendar event
+    // Create calendar event - let Google Calendar use the calendar's default timezone
     const event = {
       summary: `${booking.service} - ${booking.name}`,
       description: `
