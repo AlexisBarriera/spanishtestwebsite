@@ -38,29 +38,72 @@ const BookingForm: React.FC<BookingFormProps> = ({
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    
+    const { name, value } = e.target;
+
+    if (name === 'phone') {
+      // Auto-format phone number
+      let formattedValue = value.replace(/\D/g, ''); // Remove all non-digits
+
+      if (formattedValue.length > 0) {
+        if (formattedValue.startsWith('1')) {
+          // Add +1 country code
+          formattedValue = `+1 ${formattedValue.slice(1)}`;
+        }
+
+        // Apply (XXX) XXX XXXX format if it fits the pattern
+        const digitsOnly = formattedValue.replace(/\D/g, '');
+        if (digitsOnly.length === 11 && formattedValue.startsWith('+1 ')) {
+          const areaCode = digitsOnly.slice(1, 4);
+          const firstPart = digitsOnly.slice(4, 7);
+          const secondPart = digitsOnly.slice(7);
+          formattedValue = `+1 (${areaCode}) ${firstPart} ${secondPart}`;
+        } else if (digitsOnly.length === 10 && (formattedValue.startsWith('+1 ') || !formattedValue.startsWith('+'))) {
+          const areaCode = digitsOnly.slice(0, 3);
+          const firstPart = digitsOnly.slice(3, 6);
+          const secondPart = digitsOnly.slice(6);
+          formattedValue = `+1 (${areaCode}) ${firstPart} ${secondPart}`;
+        }
+      }
+
+      setFormData({
+        ...formData,
+        [name]: formattedValue
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
+
     // Clear error for this field
-    if (errors[e.target.name]) {
-      setErrors({ ...errors, [e.target.name]: '' });
+    if (errors[name]) {
+      setErrors({ ...errors, [name]: '' });
     }
   };
 
   const validateForm = () => {
     const newErrors: any = {};
     
-    if (!formData.name.trim()) newErrors.name = 'El nombre es obligatorio';
+   if (!formData.name.trim()) newErrors.name = 'El nombre es obligatorio';
     if (!formData.email.trim()) {
       newErrors.email = 'El correo es obligatorio';
+    } else if (!formData.email.includes('@')) {
+      newErrors.email = 'El correo debe contener @';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'El correo es inválido';
     }
-    if (!formData.phone.trim()) newErrors.phone = 'El teléfono es obligatorio';
+
+    // Validate phone format
+    const phoneDigits = formData.phone.replace(/\D/g, '');
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'El teléfono es obligatorio';
+    } else if (phoneDigits.length !== 10) {
+      newErrors.phone = 'El teléfono debe tener 10 dígitos';
+    }
+
     if (!formData.service) newErrors.service = 'Por favor selecciona un servicio';
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -131,7 +174,7 @@ const BookingForm: React.FC<BookingFormProps> = ({
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            placeholder="(787) 123-4567"
+            placeholder="+1 (787) 999 9999"
             className={errors.phone ? 'error' : ''}
             disabled={isSubmitting}
           />
