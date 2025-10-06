@@ -54,6 +54,31 @@ const BookingCalendar: React.FC = () => {
     }
   };
 
+  const loadExternalBookings = async () => {
+    setIsLoadingExternal(true);
+    try {
+      // Get current month date range for external bookings
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+
+      const response = await fetch(`/api/calendar-events?startDate=${startOfMonth}&endDate=${endOfMonth}`);
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setExternalBookings(data.bookings);
+        }
+      } else {
+        console.error('Failed to load external bookings');
+      }
+    } catch (error) {
+      console.error('Error loading external bookings:', error);
+    } finally {
+      setIsLoadingExternal(false);
+    }
+  };
+  
   const saveBookings = async (newBookings: Booking[]) => {
     try {
       await persistence.setItem('bookings', JSON.stringify(newBookings));
@@ -173,7 +198,7 @@ const BookingCalendar: React.FC = () => {
                 selectedDate={selectedDate}
                 selectedTime={selectedTime}
                 onTimeSelect={handleTimeSelect}
-                bookings={bookings}
+                bookings={[...bookings, ...externalBookings]}
               />
             )}
 
