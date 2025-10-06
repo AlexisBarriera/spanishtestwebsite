@@ -76,12 +76,30 @@ export default async function handler(
     // Get query parameters for date range (optional)
     const { startDate, endDate } = req.query;
 
-    // Default to current month if no dates provided
+// Default to current month if no dates provided
     const now = new Date();
-    const startOfMonth = startDate || new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const endOfMonth = endDate || new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    let startOfMonth: string;
+    let endOfMonth: string;
+
+    if (startDate && endDate) {
+      // Convert date strings to full datetime strings with start of day and end of day
+      const startDateObj = new Date(startDate);
+      const endDateObj = new Date(endDate);
+
+      // Set start time to beginning of day (00:00:00)
+      startDateObj.setHours(0, 0, 0, 0);
+      // Set end time to end of day (23:59:59.999)
+      endDateObj.setHours(23, 59, 59, 999);
+
+      startOfMonth = startDateObj.toISOString();
+      endOfMonth = endDateObj.toISOString();
+    } else {
+      startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+    }
 
     console.log('Fetching calendar events:', { calendarId, startOfMonth, endOfMonth });
+
 
     // Fetch events from Google Calendar
     const response = await calendar.events.list({
