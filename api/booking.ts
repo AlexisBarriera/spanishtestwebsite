@@ -64,11 +64,11 @@ Booking ID: ${booking.id}
       `.trim(),
       start: {
         dateTime: startDateTime.toISOString(),
-        timeZone: 'America/Puerto_Rico', // Puerto Rico timezone (GMT-4)
+        // Remove explicit timeZone to use calendar's default timezone
       },
       end: {
         dateTime: endDateTime.toISOString(),
-        timeZone: 'America/Puerto_Rico', // Puerto Rico timezone (GMT-4)
+        // Remove explicit timeZone to use calendar's default timezone
       },
       reminders: {
         useDefault: false,
