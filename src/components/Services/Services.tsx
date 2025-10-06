@@ -5,17 +5,37 @@ import './Services.css';
 const Services: React.FC = () => {
   const services = [
     {
-      title: '[Categoría de Servicio 1]',
+      title: 'Categoría de Servicio 1',
       description: 'Servicios integrales de gestión y reporte financiero adaptados a tus necesidades',
       features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
     },
     {
-      title: '[Categoría de Servicio 2]',
+      title: 'Categoría de Servicio 2',
       description: 'Planificación estratégica y consultoría para el rendimiento financiero óptimo',
       features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
     },
     {
-      title: '[Categoría de Servicio 3]',
+      title: 'Categoría de Servicio 3',
+      description: 'Servicios especializados para requisitos financieros complejos',
+      features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
+    },
+    {
+      title: 'Categoría de Servicio 4',
+      description: 'Servicios especializados para requisitos financieros complejos',
+      features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
+    },
+    {
+      title: 'Categoría de Servicio 5',
+      description: 'Servicios especializados para requisitos financieros complejos',
+      features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
+    },
+    {
+      title: 'Categoría de Servicio 6',
+      description: 'Servicios especializados para requisitos financieros complejos',
+      features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
+    },
+    {
+      title: 'Categoría de Servicio 7',
       description: 'Servicios especializados para requisitos financieros complejos',
       features: ['Característica 1', 'Característica 2', 'Característica 3', 'Característica 4']
     }
@@ -49,7 +69,12 @@ const Services: React.FC = () => {
                 ))}
               </ul>
               
-              <button className="service-btn">Saber Más</button>
+              <button
+                className="service-btn"
+                onClick={() => window.open('https://spanishtestwebsite.vercel.app', '_blank')}
+              >
+                Llenar Formulario
+              </button>
             </div>
           ))}
         </div>
