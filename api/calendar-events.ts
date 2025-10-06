@@ -30,8 +30,46 @@ export default async function handler(
     return;
   }
 
-  if (req.method !== 'GET') {
+   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // Check for missing environment variables early
+  const googleCredentials = process.env.GOOGLE_CREDENTIALS;
+  const calendarId = process.env.GOOGLE_CALENDAR_ID;
+
+  if (!googleCredentials || !calendarId) {
+    console.error('Missing environment variables:', {
+      hasCredentials: !!googleCredentials,
+      hasCalendarId: !!calendarId,
+      credentialsLength: googleCredentials?.length,
+      calendarIdValue: calendarId?.substring(0, 20) + '...'
+    });
+
+    return res.status(500).json({
+      error: 'Server configuration error',
+      details: 'Missing required environment variables: GOOGLE_CREDENTIALS or GOOGLE_CALENDAR_ID. Please set these in Vercel project settings.',
+      debug: {
+        hasCredentials: !!googleCredentials,
+        hasCalendarId: !!calendarId,
+        credentialsKeys: googleCredentials ? Object.keys(JSON.parse(googleCredentials)) : null
+      }
+    });
+  }
+
+  // Validate Google credentials JSON
+  let parsedCredentials;
+  try {
+    parsedCredentials = JSON.parse(googleCredentials);
+    if (!parsedCredentials.type || !parsedCredentials.project_id) {
+      throw new Error('Invalid credentials format');
+    }
+  } catch (parseError) {
+    console.error('Invalid GOOGLE_CREDENTIALS JSON:', parseError);
+    return res.status(500).json({
+      error: 'Invalid Google API credentials format',
+      details: 'GOOGLE_CREDENTIALS must be valid JSON from your service account key file.'
+    });
   }
 
   try {
@@ -43,9 +81,11 @@ export default async function handler(
     const startOfMonth = startDate || new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
     const endOfMonth = endDate || new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
 
+    console.log('Fetching calendar events:', { calendarId, startOfMonth, endOfMonth });
+
     // Fetch events from Google Calendar
     const response = await calendar.events.list({
-      calendarId: process.env.GOOGLE_CALENDAR_ID!,
+      calendarId,
       timeMin: startOfMonth,
       timeMax: endOfMonth,
       singleEvents: true,
@@ -53,6 +93,7 @@ export default async function handler(
     });
 
     const events = response.data.items || [];
+    console.log(`Found ${events.length} calendar events`);
 
     // Convert Google Calendar events to booking format
     const bookings = events
@@ -90,6 +131,8 @@ export default async function handler(
         };
       });
 
+    console.log(`Converted to ${bookings.length} bookings`);
+
     res.status(200).json({
       success: true,
       bookings,
@@ -98,9 +141,33 @@ export default async function handler(
 
   } catch (error) {
     console.error('Calendar fetch error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    // Return more specific error messages for common issues
+    if (errorMessage.includes('invalid_grant')) {
+      return res.status(500).json({
+        error: 'Invalid Google API credentials',
+        details: 'Check GOOGLE_CREDENTIALS environment variable. Service account may have expired or been revoked.'
+      });
+    }
+
+    if (errorMessage.includes('Calendar ID')) {
+      return res.status(500).json({
+        error: 'Invalid calendar ID',
+        details: 'Check GOOGLE_CALENDAR_ID environment variable. Ensure the calendar exists and is accessible.'
+      });
+    }
+
+    if (errorMessage.includes('insufficient_scope')) {
+      return res.status(500).json({
+        error: 'Insufficient Google API permissions',
+        details: 'Service account needs read access to the calendar. Share calendar with service account email.'
+      });
+    }
+
     res.status(500).json({
       error: 'Failed to fetch calendar events',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: errorMessage
     });
   }
 }
