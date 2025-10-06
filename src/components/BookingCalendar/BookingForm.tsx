@@ -41,30 +41,38 @@ const BookingForm: React.FC<BookingFormProps> = ({
     const { name, value } = e.target;
 
     if (name === 'phone') {
-      // Auto-format phone number
-      let formattedValue = value.replace(/\D/g, ''); // Remove all non-digits
+      // Get raw digits from the input
+      let rawDigits = value.replace(/\D/g, '');
 
-      if (formattedValue.length > 0) {
-        if (formattedValue.startsWith('1')) {
-          // Add +1 country code
-          formattedValue = `+1 ${formattedValue.slice(1)}`;
+      let formattedValue = '';
+
+      if (rawDigits.length > 0) {
+        // Always add +1 prefix for US numbers
+        formattedValue = '+1 ';
+
+        // Add area code with parentheses
+        if (rawDigits.length >= 3) {
+          formattedValue += `(${rawDigits.substring(0, 3)})`;
+        } else {
+          formattedValue += `(${rawDigits})`;
+          formattedValue = formattedValue.replace(/\(\)$/, ''); // Remove empty parens
         }
 
-        // Apply (XXX) XXX XXXX format if it fits the pattern
-        const digitsOnly = formattedValue.replace(/\D/g, '');
-        if (digitsOnly.length === 11 && formattedValue.startsWith('+1 ')) {
-          const areaCode = digitsOnly.slice(1, 4);
-          const firstPart = digitsOnly.slice(4, 7);
-          const secondPart = digitsOnly.slice(7);
-          formattedValue = `+1 (${areaCode}) ${firstPart} ${secondPart}`;
-        } else if (digitsOnly.length === 10 && (formattedValue.startsWith('+1 ') || !formattedValue.startsWith('+'))) {
-          const areaCode = digitsOnly.slice(0, 3);
-          const firstPart = digitsOnly.slice(3, 6);
-          const secondPart = digitsOnly.slice(6);
-          formattedValue = `+1 (${areaCode}) ${firstPart} ${secondPart}`;
+        // Add first 3 digits
+        if (rawDigits.length >= 6) {
+          formattedValue += ` ${rawDigits.substring(3, 6)}`;
+        } else if (rawDigits.length > 3) {
+          formattedValue += ` ${rawDigits.substring(3)}`;
+        }
+
+        // Add last 4 digits
+        if (rawDigits.length >= 10) {
+          formattedValue += ` ${rawDigits.substring(6, 10)}`;
+        } else if (rawDigits.length > 6) {
+          formattedValue += ` ${rawDigits.substring(6)}`;
         }
       }
-
+      
       setFormData({
         ...formData,
         [name]: formattedValue
