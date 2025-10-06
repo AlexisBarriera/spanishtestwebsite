@@ -58,11 +58,14 @@ export default async function handler(
     const bookings = events
       .filter(event => event.start?.dateTime && event.end?.dateTime)
       .map(event => {
-        const startDateTime = new Date(event.start!.dateTime!);
-        const endDateTime = new Date(event.end!.dateTime!);
+        // Parse the datetime from Google Calendar (it's in UTC)
+        const startDateTimeUTC = new Date(event.start!.dateTime!);
 
-        // Convert 24-hour format to 12-hour format
-        const timeString = startDateTime.toLocaleTimeString('en-US', {
+        // Convert to Puerto Rico time (UTC-4)
+        const startDateTimePR = new Date(startDateTimeUTC.getTime() - (4 * 60 * 60 * 1000));
+
+        // Convert 24-hour format to 12-hour format for display
+        const timeString = startDateTimePR.toLocaleTimeString('en-US', {
           hour: 'numeric',
           minute: '2-digit',
           hour12: true
@@ -70,7 +73,7 @@ export default async function handler(
 
         return {
           id: event.id || `GC${Date.now()}`,
-          date: startDateTime.toISOString().split('T')[0],
+          date: startDateTimePR.toISOString().split('T')[0],
           time: timeString,
           name: 'Cliente Externo',
           email: 'externo@calendar.google.com',
