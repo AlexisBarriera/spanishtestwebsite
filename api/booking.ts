@@ -36,10 +36,12 @@ export default async function handler(
   }
 
   try {
-    const { booking } = req.body;
+        const { booking } = req.body;
 
     // Parse date and time
-    const [year, month, day] = booking.date.split('-').map(Number);
+    const year = booking.date.split('-').map(Number)[0];
+    const month = booking.date.split('-').map(Number)[1] - 1; // 0-indexed
+    const day = booking.date.split('-').map(Number)[2];
     const [time, period] = booking.time.split(' ');
     const [hour, minute] = time.split(':').map(Number);
 
@@ -47,11 +49,16 @@ export default async function handler(
     if (period === 'PM' && hour !== 12) hour24 += 12;
     if (period === 'AM' && hour === 12) hour24 = 0;
 
-    // Create the date in local time - the simplest approach
-    const startDateTime = new Date(year, month - 1, day, hour24, minute || 0);
-    const endDateTime = new Date(year, month - 1, day, hour24 + 1, minute || 0);
+    // Format local time without timezone offset
+    const monthStr = (month + 1).toString().padStart(2, '0');
+    const dayStr = day.toString().padStart(2, '0');
+    const hourStr = hour24.toString().padStart(2, '0');
+    const minuteStr = (minute || 0).toString().padStart(2, '0');
 
-    // Create calendar event - let Google Calendar use the calendar's default timezone
+    const startDateTimeLocal = `${year}-${monthStr}-${dayStr}T${hourStr}:${minuteStr}:00`;
+    const endDateTimeLocal = `${year}-${monthStr}-${dayStr}T${(hour24 + 1).toString().padStart(2, '0')}:${minuteStr}:00`;
+
+    // Create calendar event with explicit local time and timezone
     const event = {
       summary: `${booking.service} - ${booking.name}`,
       description: `
@@ -63,12 +70,12 @@ Notes: ${booking.notes || 'No additional notes'}
 Booking ID: ${booking.id}
       `.trim(),
       start: {
-        dateTime: startDateTime.toISOString(),
-        // Remove explicit timeZone to use calendar's default timezone
+        dateTime: startDateTimeLocal,
+        timeZone: 'America/Puerto_Rico',
       },
       end: {
-        dateTime: endDateTime.toISOString(),
-        // Remove explicit timeZone to use calendar's default timezone
+        dateTime: endDateTimeLocal,
+        timeZone: 'America/Puerto_Rico',
       },
       reminders: {
         useDefault: false,
