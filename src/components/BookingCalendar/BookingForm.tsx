@@ -24,7 +24,8 @@ const BookingForm: React.FC<BookingFormProps> = ({
     service: '',
     notes: ''
   });
-
+  
+ const [rawPhone, setRawPhone] = useState('');
   const [errors, setErrors] = useState<any>({});
 
   const services = [
@@ -41,39 +42,40 @@ const BookingForm: React.FC<BookingFormProps> = ({
       const { name, value } = e.target;
 
     if (name === 'phone') {
-      // Only allow digits (including + and space for formatting)
-      const allowedChars = value.replace(/[^\d\s\-\+\(\)]/g, '');
+      // Extract only the digits from what was just typed (last character)
+      const lastChar = value.slice(-1);
+      const isDigit = /\d/.test(lastChar);
 
-      // Extract only digits for validation
-      let rawDigits = allowedChars.replace(/\D/g, '');
+      if (isDigit && rawPhone.length < 10) {
+        // Add the new digit to raw phone
+        const newRawPhone = rawPhone + lastChar;
+        setRawPhone(newRawPhone);
 
-      // Limit to 10 digits
-      rawDigits = rawDigits.substring(0, 10);
+        // Format for display
+        let formattedValue = formatPhoneNumber(newRawPhone);
+        setFormData({
+          ...formData,
+          [name]: formattedValue
+        });
+      } else if (!isDigit && lastChar !== '') {
+        // Non-digit character, ignore it but update display
+        let formattedValue = formatPhoneNumber(rawPhone);
+        setFormData({
+          ...formData,
+          [name]: formattedValue
+        });
+      } else if (lastChar === '') {
+        // Backspace - remove last digit from raw phone
+        const newRawPhone = rawPhone.slice(0, -1);
+        setRawPhone(newRawPhone);
 
-      let formattedValue = '';
-      if (rawDigits.length > 0) {
-        formattedValue = '+1 ';
-
-        if (rawDigits.length >= 3) {
-          formattedValue += `(${rawDigits.substring(0, 3)})`;
-          if (rawDigits.length >= 6) {
-            formattedValue += ` ${rawDigits.substring(3, 6)}`;
-            if (rawDigits.length >= 10) {
-              formattedValue += ` ${rawDigits.substring(6, 10)}`;
-            } else if (rawDigits.length > 6) {
-              formattedValue += ` ${rawDigits.substring(6)}`;
-            }
-          } else if (rawDigits.length > 3) {
-            formattedValue += ` ${rawDigits.substring(3)}`;
-          }
-        } else {
-          formattedValue += `(${rawDigits}`;
-        }
+        // Format for display
+        let formattedValue = formatPhoneNumber(newRawPhone);
+        setFormData({
+          ...formData,
+          [name]: formattedValue
+        });
       }
-      setFormData({
-        ...formData,
-        [name]: formattedValue
-      });
     } else {
       setFormData({
         ...formData,
@@ -85,6 +87,30 @@ const BookingForm: React.FC<BookingFormProps> = ({
     if (errors[name]) {
       setErrors({ ...errors, [name]: '' });
     }
+  };
+
+  const formatPhoneNumber = (digits: string) => {
+    if (digits.length === 0) return '';
+
+    let formattedValue = '+1 ';
+
+    if (digits.length >= 3) {
+      formattedValue += `(${digits.substring(0, 3)})`;
+      if (digits.length >= 6) {
+        formattedValue += ` ${digits.substring(3, 6)}`;
+        if (digits.length >= 10) {
+          formattedValue += ` ${digits.substring(6, 10)}`;
+        } else if (digits.length > 6) {
+          formattedValue += ` ${digits.substring(6)}`;
+        }
+      } else if (digits.length > 3) {
+        formattedValue += ` ${digits.substring(3)}`;
+      }
+    } else {
+      formattedValue += `(${digits}`;
+    }
+
+    return formattedValue;
   };
 
   const validateForm = () => {
@@ -100,10 +126,9 @@ const BookingForm: React.FC<BookingFormProps> = ({
     }
 
     // Validate phone format
-    const phoneDigits = formData.phone.replace(/\D/g, '');
-    if (!formData.phone.trim()) {
+       if (rawPhone.length === 0) {
       newErrors.phone = 'El teléfono es obligatorio';
-    } else if (phoneDigits.length !== 10) {
+    } else if (rawPhone.length !== 10) {
       newErrors.phone = 'El teléfono debe tener 10 dígitos';
     }
 
