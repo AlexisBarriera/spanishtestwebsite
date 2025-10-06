@@ -76,6 +76,16 @@
   background: #f0f0f0;
 }
 
+.time-slot.external-booking {
+  background: linear-gradient(135deg, rgba(139, 64, 73, 0.1), rgba(139, 64, 73, 0.05));
+  border-color: rgba(139, 64, 73, 0.3);
+}
+
+.time-slot.external-booking .slot-status {
+  color: #8b4049;
+  font-weight: 600;
+}
+
 .slot-time {
   font-size: 1rem;
   font-weight: 600;
