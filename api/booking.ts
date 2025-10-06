@@ -46,18 +46,27 @@ export default async function handler(
     let hour24 = parseInt(hour);
     if (period === 'PM' && hour24 !== 12) hour24 += 12;
     if (period === 'AM' && hour24 === 12) hour24 = 0;
+    const puertoRicoOffset = -4; // UTC-4
 
-    // Create start and end times
     const startDateTime = new Date(
-      parseInt(year),
-      parseInt(month) - 1,
-      parseInt(day),
-      hour24,
-      parseInt(minute) || 0
+      Date.UTC(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        hour24 + puertoRicoOffset,
+        parseInt(minute) || 0
+      )
     );
 
-    const endDateTime = new Date(startDateTime);
-    endDateTime.setHours(endDateTime.getHours() + 1);
+    const endDateTime = new Date(
+      Date.UTC(
+        parseInt(year),
+        parseInt(month) - 1,
+        parseInt(day),
+        hour24 + puertoRicoOffset + 1,
+        parseInt(minute) || 0
+      )
+    );
 
     // Create calendar event
     const event = {
