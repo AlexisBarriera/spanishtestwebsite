@@ -151,11 +151,17 @@ const BookingCalendar: React.FC = () => {
     setSelectedTime('');
   };
 
-  const dateStr = selectedDate?.toLocaleDateString('es-ES', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric'
-  });
+  const dateStr = selectedDate ? (() => {
+    const year = selectedDate.getFullYear();
+    const month = selectedDate.getMonth();
+    const day = selectedDate.getDate();
+    const date = new Date(year, month, day);
+    return date.toLocaleDateString('es-ES', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
+  })() : '';
 
   return (
     <section id="booking" className="booking-calendar">
