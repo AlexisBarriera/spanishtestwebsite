@@ -38,41 +38,38 @@ const BookingForm: React.FC<BookingFormProps> = ({
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+      const { name, value } = e.target;
 
     if (name === 'phone') {
-      // Get raw digits from the input
-      let rawDigits = value.replace(/\D/g, '');
+      // Only allow digits (including + and space for formatting)
+      const allowedChars = value.replace(/[^\d\s\-\+\(\)]/g, '');
+
+      // Extract only digits for validation
+      let rawDigits = allowedChars.replace(/\D/g, '');
+
+      // Limit to 10 digits
+      rawDigits = rawDigits.substring(0, 10);
 
       let formattedValue = '';
-
       if (rawDigits.length > 0) {
-        // Always add +1 prefix for US numbers
         formattedValue = '+1 ';
 
-        // Add area code with parentheses
         if (rawDigits.length >= 3) {
           formattedValue += `(${rawDigits.substring(0, 3)})`;
+          if (rawDigits.length >= 6) {
+            formattedValue += ` ${rawDigits.substring(3, 6)}`;
+            if (rawDigits.length >= 10) {
+              formattedValue += ` ${rawDigits.substring(6, 10)}`;
+            } else if (rawDigits.length > 6) {
+              formattedValue += ` ${rawDigits.substring(6)}`;
+            }
+          } else if (rawDigits.length > 3) {
+            formattedValue += ` ${rawDigits.substring(3)}`;
+          }
         } else {
-          formattedValue += `(${rawDigits})`;
-          formattedValue = formattedValue.replace(/\(\)$/, ''); // Remove empty parens
-        }
-
-        // Add first 3 digits
-        if (rawDigits.length >= 6) {
-          formattedValue += ` ${rawDigits.substring(3, 6)}`;
-        } else if (rawDigits.length > 3) {
-          formattedValue += ` ${rawDigits.substring(3)}`;
-        }
-
-        // Add last 4 digits
-        if (rawDigits.length >= 10) {
-          formattedValue += ` ${rawDigits.substring(6, 10)}`;
-        } else if (rawDigits.length > 6) {
-          formattedValue += ` ${rawDigits.substring(6)}`;
+          formattedValue += `(${rawDigits}`;
         }
       }
-      
       setFormData({
         ...formData,
         [name]: formattedValue
