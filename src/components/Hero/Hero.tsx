@@ -3,6 +3,12 @@ import React from 'react';
 import './Hero.css';
 
 const Hero: React.FC = () => {
+  const navigateToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
   return (
     <section id="hero" className="hero">
       <div className="hero-overlay"></div>
@@ -27,8 +33,8 @@ const Hero: React.FC = () => {
             atención al detalle garantiza tu completa tranquilidad.
           </p>
           <div className="hero-cta">
-            <button onClick={() => navigateToSection('contact')} className="btn-primary">Programar Consulta</button>
-            <button className="btn-secondary">Saber Más</button>
+            <button onClick={() => navigateToSection('booking')} className="btn-primary">Programar Consulta</button>
+            <button onClick={() => navigateToSection('contact')} className="btn-secondary">Saber Más</button>
           </div>
         </div>
         
